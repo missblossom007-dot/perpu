@@ -1,0 +1,8 @@
+node_modules/
+orders.json
+requests.json
+customers.json
+email-config.js
+*.log
+.env
+*.csv

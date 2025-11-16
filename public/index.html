@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpustakaan Digital - Cari Buku PDF</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📚 Perpustakaan Digital</h1>
+            <p>Temukan buku yang Anda cari dari koleksi kami</p>
+            <button class="cart-button" onclick="showCart()">
+                🛒 Keranjang (<span id="cartCount">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Search & Filter -->
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Cari judul buku atau penulis...">
+            <select id="categoryFilter">
+                <option value="all">Semua Kategori</option>
+            </select>
+            <button onclick="searchBooks()">Cari</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <p>Menampilkan <span id="resultCount">0</span> dari <span id="totalCount">0</span> buku</p>
+        </div>
+
+        <!-- Books Grid -->
+        <div id="booksGrid" class="books-grid">
+            <p class="loading">Memuat data...</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination"></div>
+
+        <!-- Request Form -->
+        <div class="request-section">
+            <h2>Tidak Menemukan Buku yang Dicari?</h2>
+            <p>Kirim request buku yang Anda inginkan</p>
+            <button onclick="showRequestForm()">Request Buku</button>
+        </div>
+    </main>
+
+    <!-- Modal Request -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRequestForm()">&times;</span>
+            <h2>Request Buku</h2>
+            <form id="requestForm" onsubmit="submitRequest(event)">
+                <input type="text" name="name" placeholder="Nama Anda" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="bookTitle" placeholder="Judul Buku yang Dicari" required>
+                <textarea name="message" placeholder="Pesan tambahan (opsional)" rows="4"></textarea>
+                <button type="submit">Kirim Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detail Buku -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBookDetail()">&times;</span>
+            <div id="bookDetail"></div>
+        </div>
+    </div>
+
+    <!-- Modal Keranjang -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h2>🛒 Keranjang Belanja</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal" style="text-align: right; font-size: 1.5rem; font-weight: bold; margin-top: 1rem;"></div>
+            <button onclick="checkout()" style="width: 100%; padding: 1rem; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 1rem;">
+                Checkout Sekarang
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCheckout()">&times;</span>
+            <h2>Checkout</h2>
+            <form id="checkoutForm" onsubmit="submitCheckout(event)">
+                <input type="text" name="name" placeholder="Nama Lengkap" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="phone" placeholder="No. WhatsApp" required>
+                <textarea name="address" placeholder="Alamat Lengkap" rows="3" required></textarea>
+                <div style="background: #f0f0f0; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                    <p><strong>Total Buku:</strong> <span id="checkoutCount">0</span></p>
+                    <p><strong>Total Harga:</strong> Rp <span id="checkoutTotal">0</span></p>
+                </div>
+                <button type="submit">Kirim Pesanan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Download Links -->
+    <div id="downloadModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div id="downloadContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Perpustakaan Digital. Semua hak dilindungi.</p>
+            <a href="admin.html">Admin Panel</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

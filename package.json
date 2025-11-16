@@ -1,0 +1,18 @@
+{
+  "name": "aplikasi-buku",
+  "version": "1.0.0",
+  "description": "Aplikasi pencarian dan request buku PDF",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check-excel": "node check-excel.js",
+    "import-customers": "node import-existing-customers.js",
+    "setup-email": "node setup-email-wizard.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.1",
+    "xlsx": "^0.18.5"
+  }
+}

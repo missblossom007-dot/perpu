@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Perpustakaan Digital</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .requests-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .requests-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .requests-table th {
+            background: #f5576c;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+        .requests-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .requests-table tr:hover {
+            background: #f9f9f9;
+        }
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+        .tab-btn.active {
+            background: #f5576c;
+            color: white;
+            border-color: #f5576c;
+        }
+        .tab-btn:hover {
+            border-color: #f5576c;
+        }
+        .customer-highlight {
+            background: #fef3c7 !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <h1>🔐 Admin Panel</h1>
+            <p>Kelola request buku dari pelanggan</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="margin: 2rem 0; display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" style="color: #667eea; text-decoration: none;">← Kembali ke Halaman Utama</a>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="showTab('orders')" id="ordersTab" class="tab-btn active">📦 Pesanan</button>
+                <button onclick="showTab('customers')" id="customersTab" class="tab-btn">👥 Pelanggan</button>
+                <button onclick="showTab('requests')" id="requestsTab" class="tab-btn">📝 Request</button>
+            </div>
+        </div>
+
+        <!-- Tab Orders -->
+        <div id="ordersSection" class="tab-content">
+            <div class="requests-table" style="margin-bottom: 2rem;">
+                <h2 style="padding: 1rem; background: #f9f9f9;">📦 Pesanan Buku (Orders)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Nama</th>
+                        <th>Kontak</th>
+                        <th>Jumlah Buku</th>
+                        <th>Total Harga</th>
+                        <th>Detail</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTable">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">Memuat data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+            </div>
+        </div>
+
+        <!-- Tab Customers -->
+        <div id="customersSection" class="tab-content" style="display: none;">
+            <div class="requests-table">
+                <div style="padding: 1rem; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0;">👥 Database Pelanggan</h2>
+                    <button onclick="exportCustomers()" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        📥 Export ke CSV
+                    </button>
+                </div>
+                <div style="padding: 1rem; background: #e0f2fe;">
+                    <p style="margin: 0; color: #0369a1;">
+                        💡 <strong>Gunakan data ini untuk:</strong> Email marketing, WhatsApp broadcast, program loyalitas, dan reselling
+                    </p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>WhatsApp</th>
+                            <th>Total Pesanan</th>
+                            <th>Total Buku</th>
+                            <th>Total Belanja</th>
+                            <th>Pertama Beli</th>
+                            <th>Terakhir Beli</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTable">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 2rem;">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Requests -->
+        <div id="requestsSection" class="tab-content" style="display: none;">
+            <div class="requests-table">
+                <h2 style="padding: 1rem; background: #f9f9f9;">📝 Request Buku dari Pelanggan</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Judul Buku</th>
+                            <th>Pesan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTable">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Perpustakaan Digital. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                
+                const tbody = document.getElementById('ordersTable');
+                
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Belum ada pesanan</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = orders.reverse().map(order => `
+                    <tr>
+                        <td>${new Date(order.date).toLocaleString('id-ID')}</td>
+                        <td><strong>${order.name}</strong><br><small>${order.address}</small></td>
+                        <td>${order.email}<br>${order.phone}</td>
+                        <td style="text-align: center;"><strong>${order.bookCount}</strong> buku</td>
+                        <td><strong>Rp ${order.total.toLocaleString('id-ID')}</strong></td>
+                        <td>
+                            <button onclick="showOrderDetail(${JSON.stringify(order.books).replace(/"/g, '&quot;')})" 
+                                    style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                Lihat Buku
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+        
+        async function loadRequests() {
+            try {
+                const response = await fetch('/api/requests');
+                const requests = await response.json();
+                
+                const tbody = document.getElementById('requestsTable');
+                
+                if (requests.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">Belum ada request</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = requests.reverse().map(req => `
+                    <tr>
+                        <td>${new Date(req.date).toLocaleString('id-ID')}</td>
+                        <td>${req.name}</td>
+                        <td>${req.email}</td>
+                        <td><strong>${req.bookTitle}</strong></td>
+                        <td>${req.message || '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading requests:', error);
+            }
+        }
+        
+        function showOrderDetail(books) {
+            const bookList = books.map(book => `• ${book.title} - Rp ${book.price.toLocaleString('id-ID')}`).join('\n');
+            alert('Daftar Buku:\n\n' + bookList);
+        }
+        
+        async function loadCustomers() {
+            try {
+                const response = await fetch('/api/customers');
+                const customers = await response.json();
+                
+                const tbody = document.getElementById('customersTable');
+                
+                if (customers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">Belum ada pelanggan</td></tr>';
+                    return;
+                }
+                
+                // Sort by total spent (highest first)
+                customers.sort((a, b) => b.totalSpent - a.totalSpent);
+                
+                tbody.innerHTML = customers.map((customer, index) => {
+                    const isVIP = customer.totalSpent >= 500000;
+                    const rowClass = isVIP ? 'customer-highlight' : '';
+                    const vipBadge = isVIP ? ' 👑' : '';
+                    
+                    return `
+                        <tr class="${rowClass}">
+                            <td><strong>${customer.name}${vipBadge}</strong></td>
+                            <td>${customer.email}</td>
+                            <td>
+                                <a href="https://wa.me/${customer.phone.replace(/^0/, '62')}" 
+                                   target="_blank" 
+                                   style="color: #10b981; text-decoration: none;">
+                                    ${customer.phone} 📱
+                                </a>
+                            </td>
+                            <td style="text-align: center;"><strong>${customer.totalOrders}</strong>x</td>
+                            <td style="text-align: center;">${customer.totalBooks} buku</td>
+                            <td><strong style="color: #667eea;">Rp ${customer.totalSpent.toLocaleString('id-ID')}</strong></td>
+                            <td style="font-size: 0.85rem;">${new Date(customer.firstPurchase).toLocaleDateString('id-ID')}</td>
+                            <td style="font-size: 0.85rem;">${new Date(customer.lastPurchase).toLocaleDateString('id-ID')}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading customers:', error);
+            }
+        }
+        
+        function showTab(tab) {
+            // Hide all tabs
+            document.getElementById('ordersSection').style.display = 'none';
+            document.getElementById('customersSection').style.display = 'none';
+            document.getElementById('requestsSection').style.display = 'none';
+            
+            // Remove active class from all buttons
+            document.getElementById('ordersTab').classList.remove('active');
+            document.getElementById('customersTab').classList.remove('active');
+            document.getElementById('requestsTab').classList.remove('active');
+            
+            // Show selected tab
+            if (tab === 'orders') {
+                document.getElementById('ordersSection').style.display = 'block';
+                document.getElementById('ordersTab').classList.add('active');
+            } else if (tab === 'customers') {
+                document.getElementById('customersSection').style.display = 'block';
+                document.getElementById('customersTab').classList.add('active');
+            } else if (tab === 'requests') {
+                document.getElementById('requestsSection').style.display = 'block';
+                document.getElementById('requestsTab').classList.add('active');
+            }
+        }
+        
+        function exportCustomers() {
+            window.open('/api/customers/export', '_blank');
+        }
+        
+        loadOrders();
+        loadCustomers();
+        loadRequests();
+    </script>
+</body>
+</html>
