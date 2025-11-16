@@ -8,6 +8,7 @@
     "dev": "node server.js",
     "check-excel": "node check-excel.js",
     "import-customers": "node import-existing-customers.js",
+    "import-mongodb": "node import-to-mongodb.js",
     "setup-email": "node setup-email-wizard.js",
     "vercel-build": "echo 'Build complete'"
   },
