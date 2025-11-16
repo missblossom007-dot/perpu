@@ -6,3 +6,4 @@ email-config.js
 *.log
 .env
 *.csv
+node_quickstart/
