@@ -10,7 +10,15 @@
 https://vercel.com/miss-projects-66d81de3/perpu/settings/environment-variables
 ```
 
----
+Key: MONGODB_URI
+Value: mongodb+srv://missblossom007_db_user:7C9RBgPL3UYgvdGr@cluster0.ydjpxcw.mongodb.net/perpustakaan?retryWrites=true&w=majority
+Environments: ✅ Production ✅ Preview ✅ Development
+Key: EMAIL_USER
+Value: digimetateam@gmail.com
+Environments: ✅ Production ✅ Preview ✅ Development
+Key: EMAIL_PASS
+Value: rzxfnvxzgugcxdir
+Environments: ✅ Production ✅ Preview ✅ Development
 
 ### Langkah 2: Tambahkan 3 Variables
 
