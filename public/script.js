@@ -45,6 +45,28 @@ async function loadBooks(page = 1) {
     }
 }
 
+// Convert Google Drive link to direct download link
+function convertDriveLink(link) {
+    if (!link) return '';
+    
+    // Extract file ID from various Google Drive URL formats
+    const patterns = [
+        /\/file\/d\/([^\/]+)/,  // /file/d/FILE_ID/view
+        /id=([^&]+)/,            // ?id=FILE_ID
+        /\/d\/([^\/]+)/          // /d/FILE_ID
+    ];
+    
+    for (const pattern of patterns) {
+        const match = link.match(pattern);
+        if (match && match[1]) {
+            // Return direct download link
+            return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+        }
+    }
+    
+    return link; // Return original if no match
+}
+
 function displayBooks(books) {
     const grid = document.getElementById('booksGrid');
     
@@ -53,7 +75,9 @@ function displayBooks(books) {
         return;
     }
     
-    grid.innerHTML = books.map(book => `
+    grid.innerHTML = books.map(book => {
+        const publicLink = convertDriveLink(book.driveLink);
+        return `
         <div class="book-card">
             <div onclick="showBookDetail(${book.id})">
                 <img src="${book.cover || 'https://via.placeholder.com/250x300?text=No+Cover'}" 
@@ -67,11 +91,12 @@ function displayBooks(books) {
                     <div class="book-price">Rp ${book.price.toLocaleString('id-ID')}</div>
                 </div>
             </div>
-            <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${book.id}, '${book.title.replace(/'/g, "\\'")}', ${book.price}, '${book.cover}', '${book.author.replace(/'/g, "\\'")}', '${book.driveLink}')">
+            <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${book.id}, '${book.title.replace(/'/g, "\\'")}', ${book.price}, '${book.cover}', '${book.author.replace(/'/g, "\\'")}', '${publicLink}')">
                 + Tambah ke Keranjang
             </button>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function displayPagination(currentPage, totalPages) {
@@ -131,6 +156,7 @@ async function showBookDetail(bookId) {
         
         const modal = document.getElementById('bookModal');
         const detail = document.getElementById('bookDetail');
+        const publicLink = convertDriveLink(book.driveLink);
         
         detail.innerHTML = `
             <div style="display: flex; gap: 2rem;">
@@ -143,12 +169,12 @@ async function showBookDetail(bookId) {
                     <p><strong>Kategori:</strong> ${book.category}</p>
                     <p><strong>Harga:</strong> Rp ${book.price.toLocaleString('id-ID')}</p>
                     <p style="margin-top: 1rem;">${book.description}</p>
-                    ${book.driveLink ? `
-                        <a href="${book.driveLink}" target="_blank" 
+                    ${publicLink ? `
+                        <a href="${publicLink}" target="_blank" 
                            style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; 
                                   background: #667eea; color: white; text-decoration: none; 
                                   border-radius: 5px; font-weight: bold;">
-                            📥 Lihat di Google Drive
+                            📥 Download dari Google Drive
                         </a>
                     ` : ''}
                 </div>
@@ -349,18 +375,20 @@ function showDownloadLinks(books) {
         <h2 style="color: #10b981; margin-bottom: 1rem;">✅ Pesanan Berhasil!</h2>
         <p style="margin-bottom: 1rem;">Terima kasih! Berikut link Google Drive untuk ${books.length} buku yang Anda pesan:</p>
         <div style="max-height: 400px; overflow-y: auto; background: #f9f9f9; padding: 1rem; border-radius: 5px;">
-            ${books.map((book, index) => `
+            ${books.map((book, index) => {
+                const publicLink = convertDriveLink(book.driveLink);
+                return `
                 <div style="margin-bottom: 1rem; padding: 1rem; background: white; border-radius: 5px;">
                     <strong>${index + 1}. ${book.title}</strong><br>
                     <small style="color: #666;">${book.author}</small><br>
-                    <a href="${book.driveLink}" target="_blank" 
+                    <a href="${publicLink}" target="_blank" 
                        style="display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; 
                               background: #667eea; color: white; text-decoration: none; 
                               border-radius: 5px; font-size: 0.9rem;">
                         📥 Download dari Google Drive
                     </a>
                 </div>
-            `).join('')}
+            `}).join('')}
         </div>
         <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
             💡 Link juga telah dikirim ke email Anda. Simpan link ini untuk akses di kemudian hari.
