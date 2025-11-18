@@ -25,25 +25,47 @@ function initializeEmailTransporter() {
   }
 }
 
+// Convert Google Drive link to direct download format
+function convertDriveLinkForEmail(link) {
+  if (!link) return '';
+  
+  const patterns = [
+    /\/file\/d\/([^\/]+)/,
+    /id=([^&]+)/,
+    /\/d\/([^\/]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = link.match(pattern);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+  }
+  
+  return link;
+}
+
 async function sendOrderEmail(customerEmail, customerName, books, total) {
   if (!transporter) {
     console.log('⚠️ Email not configured, skipping email send');
     return { success: false, message: 'Email not configured' };
   }
 
-  const booksList = books.map((book, index) => `
+  const booksList = books.map((book, index) => {
+    const directLink = convertDriveLinkForEmail(book.driveLink);
+    return `
     <div style="margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
       <strong>${index + 1}. ${book.title}</strong><br>
       <small style="color: #666;">Penulis: ${book.author}</small><br>
       <small style="color: #666;">Harga: Rp ${book.price.toLocaleString('id-ID')}</small><br>
-      <a href="${book.driveLink}" 
+      <a href="${directLink}" 
          style="display: inline-block; margin-top: 8px; padding: 8px 15px; 
                 background: #667eea; color: white; text-decoration: none; 
                 border-radius: 5px; font-size: 14px;">
         📥 Download dari Google Drive
       </a>
     </div>
-  `).join('');
+  `}).join('');
 
   const mailOptions = {
     from: emailConfig.auth.user,
