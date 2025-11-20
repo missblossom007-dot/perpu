@@ -5,8 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:postgres": "node server-postgres.js",
     "dev": "node server.js",
     "check-excel": "node check-excel.js",
+    "migrate": "node migrate-to-postgres.js",
     "import-customers": "node import-existing-customers.js",
     "import-mongodb": "node import-to-mongodb.js",
     "setup-email": "node setup-email-wizard.js",
@@ -18,6 +20,7 @@
     "mongoose": "^8.19.4",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.1",
+    "pg": "^8.16.3",
     "xlsx": "^0.18.5"
   }
 }
