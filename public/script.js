@@ -83,6 +83,9 @@ function displayBooks(books) {
                 <img src="${book.cover || 'https://via.placeholder.com/250x300?text=No+Cover'}" 
                      alt="${book.title}" 
                      class="book-cover"
+                     loading="lazy"
+                     width="250"
+                     height="300"
                      onerror="this.src='https://via.placeholder.com/250x300?text=No+Cover'">
                 <div class="book-info">
                     <div class="book-title">${book.title}</div>
